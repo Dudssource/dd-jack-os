@@ -1,0 +1,164 @@
+class Screen {
+    static boolean color;
+    static Array twoToThe;
+
+    function void init() {
+        var int shift, i;
+        let color = 1;
+        let shift = 1;
+        let i = 0;
+        let twoToThe = Array.new(16);
+        while (i < 16) {
+            let twoToThe[i] = shift;
+            let shift = shift * 2;
+            let i = i + 1;
+        }
+        return;
+    }
+
+    // Erases the entire screen
+    function void clearScreen() {
+        var int j;
+        let j = 0;
+        while (~(j = 8192)) {
+            // clear bit
+            do Memory.poke(16384+j, false);
+            // j++
+            let j = j + 1;
+        }
+        return;
+    }
+
+    // Sets the current color
+    function void setColor(bool b) {
+        let color = b;
+        return;
+    }
+
+    // Sets pixel (x,y) to the current color
+    function void drawPixel(int x, int y) {
+        var int address, value, mod, d;
+        let d = x/16;
+        let address = 16384+((32*y)+d);
+        let value = Memory.peek(address);
+        // x % 16
+        let mod = x - (16 * d);
+        if (color) {
+            let value = value | twoToThe[mod];
+        } else {
+            let value = value & (~(twoToThe[mod]));
+        }
+        do Memory.poke(address, value);
+        return;
+    }
+
+    // Draws a line from pixel (x1,y1) to pixel (x2,y2), using the current color.
+    function void drawLine(int x1, int y1, int x2, int y2) {
+        var int a, b, x, y, dx, dy, diff, upDown, leftRight, rx, ry;
+        var boolean isHorizontal, isVertical;
+        let isHorizontal = false;
+        let isVertical = false;
+        let rx = 0;
+        let ry = 0;
+        // 0- down
+        // 1- up
+        let upDown = 0;
+        // 0- right
+        // 1- left
+        let leftRight = 0;
+
+        if (x1 = x2) {
+            let isVertical = true;
+        }
+
+        if (y1 = y2) {
+            let isHorizontal = true;
+        }
+
+        let x = x1;
+        let y = y1;    
+        let dx = x2 - x1;
+        let dy = y2 - y1;
+        let a = 0;
+        let b = 0;
+        let diff = 0;
+
+        if (x1 > x2) {
+            let dx = x1 - x2;
+            let leftRight = 1;
+        }
+
+        if (y1 > y2) {
+            let dy = y1 - y2;
+            let upDown = 1;
+        }
+        
+        while (((a < dx)|(a = dx)) & ((b < dy)|(b = dy))) {
+
+            let rx = x + a;
+            let ry = y + b;
+
+            if (upDown = 1) {
+                let ry = y - b;
+            }
+            if (leftRight = 1) {
+                let rx = x - a;
+            }
+
+            do Screen.drawPixel(rx, ry);
+
+            if (isVertical) {
+                let b = b + 1;
+            }
+
+            if (isHorizontal) {
+                let a = a + 1;
+            }
+
+            if (~(isHorizontal|isVertical)) {
+                if (diff < 0) {
+                    let a = a + 1;
+                    let diff = diff + dy;
+                } else {
+                    let b = b + 1;
+                    let diff = diff - dx;
+                }
+            }
+        }
+        
+        return;
+    }
+
+    // Draws a filled rectangle
+    // whose top left corner is (x1,y1) and bottom right corner is (x2,y2), using the current color.
+    function void drawRectangle(int x1, int y1, int x2, int y2) {
+        var int dy;
+        let dy = y1;
+        while ((dy < y2)|(dy = y2)) {
+            do Screen.drawLine(x1, dy, x2, dy);
+            let dy = dy + 1;
+        }
+        return;
+    }
+
+    // Draws a filled circle of radius r ≤181 around
+    // (x,y), using the current color.
+    function void drawCircle(int x, int y, int r) {
+        var int dy, z1, z2;
+        let dy = -r;
+        let z1 = 0;
+        let z2 = 0;
+        if (r > 181) {
+            // Illegal radius
+            do Sys.error(13);
+            return;
+        }
+        while (~(dy = r)) {
+            let z1 = Math.sqrt((r * r)-(dy * dy));
+            let z2 = y + dy;
+            do Screen.drawLine(x - z1, z2, x + z1, z2);
+            let dy = dy + 1;
+        }
+        return;
+    }
+}

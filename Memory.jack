@@ -1,0 +1,87 @@
+class Memory {
+    static Array ram;
+    static Array heap;
+    static int freeList;
+
+    // Initializes the Memory class
+    function void init() {
+        let ram = 0;
+        let heap = 2048;
+        let freeList = 2048;
+        let heap[0] = 14334;
+        let heap[1] = 0;
+        return;
+    }
+
+    // Returns the value of the given RAM address
+    function int peek(int address) {
+        return ram[address];
+    }
+
+    // Sets the value of the given RAM address to the given value
+    function void poke(int address, int value) {
+        let ram[address] = value;
+        return;
+    }
+
+    // Finds and allocates from the heap a memory block of the
+    // specified size and returns its base address
+    function Array alloc(int size) {
+        var int blockSize, nextBlock, blockAddress;
+
+        if (size < 0) {
+            // Allocated memory size must be positive
+            do Sys.error(5);
+            // return
+            return 0;
+        }
+
+        let blockSize = 0;
+        let blockAddress = 0;
+        let nextBlock = freeList;
+
+        while (true) {
+            // block size
+            let blockSize = ram[nextBlock]; 
+
+            // found
+            if (~(blockSize < (size + 2))) {
+                // save block
+                let blockAddress = nextBlock + 2;
+                // busy
+                let ram[nextBlock] = 0;
+                // calculate next
+                let ram[nextBlock + 1] = nextBlock + size + 2;
+                // resize available block
+                let ram[ram[nextBlock + 1]]  = blockSize - (size + 2);
+                let ram[ram[nextBlock + 1] + 1] = blockSize + blockAddress;
+                
+                // block address
+                return blockAddress;
+            }
+
+            // could not find block
+            if (nextBlock = 0) {
+                // Heap overflow
+                do Sys.error(6);
+                // return
+                return 0;
+            } 
+
+            // next block
+            let nextBlock = ram[nextBlock + 1];      
+        }
+
+        // Heap overflow
+        do Sys.error(6);
+        return 0;
+    }
+
+    // De-allocates the given object and frees its space
+    function void deAlloc(Array object) {
+        var int objectSize;
+        let objectSize = (ram[object - 1] - object);
+        let ram[object - 2] = objectSize;
+        return;
+    }
+}
