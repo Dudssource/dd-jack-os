@@ -1,0 +1,138 @@
+class Keyboard {
+
+    /** Initializes the keyboard. */
+    function void init() {
+        return;
+    } 
+
+    /**
+     * Returns the character of the currently pressed key on the keyboard;
+     * if no key is currently pressed, returns 0.
+     *
+     * Recognizes all ASCII characters, as well as the following keys:
+     * new line = 128 = String.newline()
+     * backspace = 129 = String.backspace()
+     * left arrow = 130
+     * up arrow = 131
+     * right arrow = 132
+     * down arrow = 133
+     * home = 134
+     * End = 135
+     * page up = 136
+     * page down = 137
+     * insert = 138
+     * delete = 139
+     * ESC = 140
+     * F1 - F12 = 141 - 152
+     */
+    function char keyPressed() {
+        var char key;
+        let key = Memory.peek(24576);
+        return key;
+    }
+
+    /**	Waits until a key is pressed on the keyboard and released,
+     *  then echoes the key to the screen, and returns the character 
+     *  of the pressed key. */
+    function char readChar() {
+        var char key, c;
+        do Output.printChar(0);
+        while (key = 0) {
+            let key = Keyboard.keyPressed();
+        }
+        let c = key;
+        while (~(key = 0)) {
+            let key = Keyboard.keyPressed();
+        }
+        do Output.backSpace();
+        do Output.printChar(32);
+        do Output.backSpace();
+        if (~((c = String.newLine()) | (c = String.backSpace()))){
+            do Output.printChar(c);
+        }
+        return c;
+    }
+
+    /**	Displays the message on the screen, reads from the keyboard the entered
+     *  text until a newline character is detected, echoes the text to the screen,
+     *  and returns its value. Also handles user backspaces. */
+    function String readLine(String message) {
+        var char c;
+        var String str;
+        var boolean ok;
+        do Output.printString(message);
+        let ok = false;
+        let str = String.new(100);
+        while (~ok) {
+            let c = Keyboard.readChar();
+            if (c = String.newLine()) {
+                do Output.println();
+                let ok = true;
+            } else {
+                if (c = String.backSpace()) {
+                    if (~(str.length() = 0)) {
+                        do Output.printChar(32);
+                        do Output.backSpace();
+                        do Output.backSpace();
+                        do str.eraseLastChar();
+                    }
+                } else {
+                    do str.appendChar(c);
+                }
+            }
+        }
+        return str;
+    }
+
+    /** Displays the message on the screen, reads from the keyboard the entered
+     *  text until a newline character is detected, echoes the text to the screen,
+     *  and returns its integer value (until the first non-digit character in the
+     *  entered text is detected). Also handles user backspaces. */
+    function int readInt(String message) {
+        var int c;
+        var int number, tmp, count;
+        var Array digits;
+        var boolean ok, signed;
+        let ok = false;
+        let signed = false;
+        let number = 0;
+        let digits = Array.new(6);
+        let count = 0;
+        do Output.printString(message);
+        while (~ok) {
+    	    let c = Keyboard.readChar();
+            if ((c = 45) & (count = 0)) {
+                let signed = true;
+            } else {
+                // digit
+                if ((c > 47) & (c < 58)) {
+                    let tmp = 48 - c;
+                    let digits[count] = tmp;
+                    let count = count + 1;
+                } else {
+                    if (c = String.backSpace()) {
+                        if (~(count = 0)) {
+                            do Output.printChar(32);
+                            do Output.backSpace();
+                            do Output.backSpace();
+                            let count = count - 1;
+                        }
+                    } else {
+                        if (c = String.newLine()) {
+                            do Output.println();
+                        }
+                        let ok = true;
+                    }
+                }
+            }
+	    }
+        while (count > 0) {
+            let count = count - 1;
+            let number = (number * 10) + digits[count];
+        }
+        if (signed) {
+            let number = -number;
+        }
+        return number;
+    }
+}
