@@ -269,9 +269,9 @@ class Output {
     function void moveCursor(int i, int j) {
         let currentRow = i;
         let currentColumn = j;
-        // do Output.printChar(32);
-        // let currentRow = i;
-        // let currentColumn = j;
+        do Output.printChar(32);
+        let currentRow = i;
+        let currentColumn = j;
         return;
     }
 

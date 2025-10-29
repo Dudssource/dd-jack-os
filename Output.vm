@@ -2085,6 +2085,13 @@ push argument 0
 pop static 1
 push argument 1
 pop static 2
+push constant 32
+call Output.printChar 1
+pop temp 0
+push argument 0
+pop static 1
+push argument 1
+pop static 2
 push constant 0
 return
 function Output.println 0
