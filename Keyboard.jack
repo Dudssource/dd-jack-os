@@ -90,23 +90,30 @@ class Keyboard {
      *  entered text is detected). Also handles user backspaces. */
     function int readInt(String message) {
         var int c;
-        var int number, tmp, count;
+        var int number, tmp, count, j;
         var Array digits;
         var boolean ok, signed;
         let ok = false;
         let signed = false;
         let number = 0;
+        let j = 0;
         let digits = Array.new(6);
         let count = 0;
         do Output.printString(message);
         while (~ok) {
     	    let c = Keyboard.readChar();
-            if ((c = 45) & (count = 0)) {
-                let signed = true;
+            if (c = 45) {
+                if ((count = 0) & (~(signed))) {
+                    let signed = true;
+                } else {
+                    do Output.printChar(32);
+                    do Output.backSpace();
+                    do Output.backSpace();
+                }
             } else {
                 // digit
                 if ((c > 47) & (c < 58)) {
-                    let tmp = 48 - c;
+                    let tmp = c - 48;
                     let digits[count] = tmp;
                     let count = count + 1;
                 } else {
@@ -126,9 +133,9 @@ class Keyboard {
                 }
             }
 	    }
-        while (count > 0) {
-            let count = count - 1;
-            let number = (number * 10) + digits[count];
+        while (j < count) {
+            let number = (number * 10) + digits[j];
+            let j = j + 1;
         }
         if (signed) {
             let number = -number;
