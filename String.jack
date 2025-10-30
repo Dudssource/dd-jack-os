@@ -1,0 +1,205 @@
+// This file is part of DD Jack OS.
+// Copyright (C) 2025-2025 Eduardo <dudssource@gmail.com>
+//
+// DD Jack OS is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// DD Jack OS is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Jack OS.  If not, see <http://www.gnu.org/licenses/>.
+class String {
+
+    field Array str;
+    field int length;
+    field int lengthLimit;
+
+    /** constructs a new empty string with a maximum length of maxLength
+     *  and initial length of 0. */
+    constructor String new(int maxLength) {
+        if (maxLength < 0) {
+            // Maximum length must be non-negative
+            do Sys.error(14);
+            return this;
+        }
+        if (maxLength > 0) {
+            let str = Array.new(maxLength);
+        }
+        let lengthLimit = maxLength;
+        let length = 0;
+        return this;
+    }
+
+    /** Disposes this string. */
+    method void dispose() {
+        if (lengthLimit > 0) {
+            do str.dispose();
+        }
+        return;
+    }
+
+    /** Returns the current length of this string. */
+    method int length() {
+        return length;
+    }
+
+    /** Returns the character at the j-th location of this string. */
+    method char charAt(int j) {
+        var char c;
+        if (j > length) {
+            // String index out of bounds 
+            do Sys.error(15);
+            return 0;
+        }
+        let c = str[j];
+        return c;
+    }
+
+    /** Sets the character at the j-th location of this string to c. */
+    method void setCharAt(int j, char c) {
+        if (j > length) {
+            // String index out of bounds 
+            do Sys.error(16);
+            return;
+        }
+        let str[j] = c;
+        return;
+    }
+
+    /** Appends c to this string's end and returns this string. */
+    method String appendChar(char c) {
+        if (lengthLimit = length) {
+            // String is full 
+            do Sys.error(17);
+            return 0;
+        }
+        let str[length] = c;
+        let length = length + 1;
+        return this;
+    }
+
+    /** Erases the last character from this string. */
+    method void eraseLastChar() {
+        let str[length] = 0;
+        if (length = 0) {
+            // String is empty
+            do Sys.error(18);
+            return;
+        }
+        let length = length - 1;
+        return;
+    }
+
+    /** Returns the integer value of this string, 
+     *  until a non-digit character is detected. */
+    method int intValue() {
+        var int number, digit, j, count;
+        var Array digits;
+        var boolean ok, signed;
+        var char c;
+        if (length = 0) {
+            return 0;
+        }
+        let digits = Array.new(6);
+        let count = 0;
+        let j = 0;
+        let ok = false;
+        let number = 0;
+        let signed = false;
+
+        while (~ok) {
+            let c = charAt(j);
+            // minus signal
+            if (c = 45) {
+                let signed = true;
+                let j = j + 1;
+            } else {
+                // digit
+                if ((c > 47) & (c < 58)) {
+                    let digits[count] = c - 48;
+                    let j = j + 1;
+                    let count = count + 1;
+
+                    // end of array or integer overflow
+                    if ((j > length) | (j > 6)) {
+                        let ok = true;
+                    }
+                } else {
+                    let ok = true;
+                }
+            }
+        }
+        let j = 0;
+        while (j < count) {
+            let number = (number * 10) + digits[j];
+            let j = j + 1;
+        }
+        if (signed) {
+            let number = -number;
+        }
+        return number;
+    }
+
+    /** Sets this string to hold a representation of the given value. */
+    method void setInt(int i) {
+        var int number, digit, tmp, count;
+        var Array digits;
+        let count = 0;
+        let number = i;
+        while (count < length) {
+            let str[count] = 0;
+            let count = count + 1;
+        }
+        let length = 0;
+        if (number = 0) {
+            do appendChar(48);
+            return;
+        }
+        if (number < 0) {
+            // minus signal
+            do appendChar(45);
+            let number = -number;
+        }
+        let digits = Array.new(7);
+        let count = 0;
+        while (~(number = 0)) {
+            let tmp = (number / 10);
+            // number % 10
+            let digit = number - (10 * tmp);
+            let digits[count] = digit;
+            let count = count + 1;
+            let number = tmp;
+        }
+        if ((lengthLimit - count) < 0) {
+            // Insufficient string capacity
+            do Sys.error(19);
+            return;
+        }
+        while (count > 0) {
+            let count = count - 1;
+            do appendChar(48 + digits[count]);
+        }
+        do digits.dispose();
+        return;
+    }
+
+    /** Returns the new line character. */
+    function char newLine() {
+        return 128;
+    }
+
+    /** Returns the backspace character. */
+    function char backSpace() {
+        return 129;
+    }
+
+    /** Returns the double quote (") character. */
+    function char doubleQuote() {
+        return 34;
+    }
+}

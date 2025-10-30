@@ -1,0 +1,60 @@
+// This file is part of DD Jack OS.
+// Copyright (C) 2025-2025 Eduardo <dudssource@gmail.com>
+//
+// DD Jack OS is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// DD Jack OS is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Jack OS.  If not, see <http://www.gnu.org/licenses/>.
+class Sys {
+
+    /** Performs all the initializations required by the OS. */
+    function void init() {
+        do Memory.init();
+        do Math.init();
+        do Screen.init();
+        do Output.init();
+        do Keyboard.init();
+        do Main.main();
+        do Sys.halt();
+
+        return;
+    }
+
+    /** Halts the program execution. */
+    function void halt() {
+        while (true){}
+        return;
+    }
+
+    /** Waits approximately duration milliseconds and returns.  */
+    function void wait(int duration) {
+        var int delay, iterations;
+        let iterations = 40;
+        while (iterations > 0) {
+            let delay = duration * 100;
+            while (delay > 0) {
+                let delay = delay - 1;
+            }
+            let iterations = iterations - 1;
+        }
+        return;
+    }
+
+    /** Displays the given error code in the form "ERR<errorCode>",
+     *  and halts the program's execution. */
+    function void error(int errorCode) {
+        do Output.printString("ERR");
+        do Output.printInt(errorCode);
+        do Output.println();
+        do Sys.halt();
+        return;
+    }
+}

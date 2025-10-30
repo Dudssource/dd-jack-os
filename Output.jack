@@ -1,3 +1,18 @@
+// This file is part of DD Jack OS.
+// Copyright (C) 2025-2025 Eduardo <dudssource@gmail.com>
+//
+// DD Jack OS is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// DD Jack OS is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Jack OS.  If not, see <http://www.gnu.org/licenses/>.
 class Output {
 
     // Character map for displaying characters
@@ -176,11 +191,11 @@ class Output {
     function void printChar(char c) {
         var int colOffset, rowOffset, address, value, mask;
         var Array map;
-        if ((c = 10)|(c = 13)) {
+        if ((c = 10)|(c = 13)|(c = String.newLine())) {
             do Output.println();
             return;
         }
-        if (c = 8) {
+        if ((c = 8)|(c = String.backSpace())) {
             do Output.backSpace();
             return;
         }
@@ -299,17 +314,17 @@ class Output {
     function void printInt(int i) {
         var int number, digit, tmp, count;
         var Array digits;
-        if (i < 0) {
-            do Output.printChar(45);
-            let i = Math.abs(i);
-        }
-        let digits = Array.new(6);
-        let count = 0;
-        if (i = 0) {
+        let number = i;
+        if (number = 0) {
             do Output.printChar(48);
             return;
         }
-        let number = i;
+        if (number < 0) {
+            do Output.printChar(45);
+            let number = -number;
+        }
+        let digits = Array.new(6);
+        let count = 0;
         while (~(number = 0)) {
             let tmp = number / 10;
             // number % 10
@@ -322,6 +337,7 @@ class Output {
             let count = count - 1;
             do Output.printChar(48 + digits[count]);
         }
+        do digits.dispose();
         return;
     }
 
